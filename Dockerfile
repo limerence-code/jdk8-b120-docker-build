@@ -16,7 +16,7 @@ ENV JDK_RPM_FILE jdk-7u71-linux-x64.rpm
 ENV OPENJDK_SRC_ZIP openjdk-8-src-b120.zip
 
 #定义解压缩后的文件名
-ENV OPENJDK_SRC_DIR openjdk
+ENV OPENJDK_SRC_DIR jdk
 
 #yum更新
 RUN yum -y update
@@ -25,7 +25,7 @@ RUN yum -y update
 RUN yum -y groupinstall "Development Tools"
 
 #安装即将用到的软件
-RUN yum -y install unzip libXtst-devel libXt-devel libXrender-devel cups-devel freetype-devel alsa-lib-devel which 
+RUN yum -y install unzip libXtst-devel libXt-devel libXrender-devel cups-devel freetype-devel alsa-lib-devel which dos2unix
 
 #把分割过的jdk1.7安装文件复制到工作目录
 COPY ./jdkrpm-* $WORK_PATH/
@@ -47,6 +47,9 @@ RUN unzip $WORK_PATH/$OPENJDK_SRC_ZIP -d $WORK_PATH
 
 #复制启动编译的shell
 COPY  ./start_make.sh $WORK_PATH/$OPENJDK_SRC_DIR/
+
+#如果是在win平台写的shell 在linux可能存在\n换行 需要转换
+RUN dos2unix $WORK_PATH/$OPENJDK_SRC_DIR/start_make.sh
 
 #给执行文件增加可执行权限:configure文件
 RUN chmod a+x $WORK_PATH/$OPENJDK_SRC_DIR/configure
